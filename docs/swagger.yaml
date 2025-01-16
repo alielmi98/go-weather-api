@@ -1,0 +1,54 @@
+basePath: /
+definitions:
+  github_com_alielmi98_go-weather-api_internal_services.WeatherResponse:
+    properties:
+      conditions:
+        type: string
+      location:
+        type: string
+      temperature:
+        type: number
+      time:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: your@email.com
+    name: API Support
+  description: Weather API for fetching weather information.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Weather API
+  version: "1.0"
+paths:
+  /weather/{city}:
+    get:
+      description: Get the current weather information for a given city.
+      parameters:
+      - description: City name
+        in: path
+        name: city
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_alielmi98_go-weather-api_internal_services.WeatherResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get weather information for a city
+swagger: "2.0"

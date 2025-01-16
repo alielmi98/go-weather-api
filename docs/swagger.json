@@ -1,0 +1,80 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Weather API for fetching weather information.",
+        "title": "Weather API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "email": "your@email.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/weather/{city}": {
+            "get": {
+                "description": "Get the current weather information for a given city.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get weather information for a city",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "City name",
+                        "name": "city",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_alielmi98_go-weather-api_internal_services.WeatherResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "github_com_alielmi98_go-weather-api_internal_services.WeatherResponse": {
+            "type": "object",
+            "properties": {
+                "conditions": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "temperature": {
+                    "type": "number"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
