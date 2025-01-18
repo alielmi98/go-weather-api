@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/alielmi98/go-weather-api/internal/dto"
 	"github.com/alielmi98/go-weather-api/internal/services"
 
 	"github.com/gin-gonic/gin"
@@ -28,8 +29,9 @@ func NewWeatherHandler(weatherService services.WeatherService) *WeatherHandler {
 // @Failure 500 {object} map[string]interface{}
 // @Router /weather/{city} [get]
 func (h *WeatherHandler) GetWeatherByCity(c *gin.Context) {
-	city := c.Param("city")
-	if city == "" {
+	var city dto.CityRequest
+	city.City = c.Param("city")
+	if city.City == "" {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"error": "missing city parameter",
 		})

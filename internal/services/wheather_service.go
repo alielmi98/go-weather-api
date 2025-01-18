@@ -4,27 +4,22 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
 	"github.com/alielmi98/go-weather-api/internal/cache"
 	"github.com/alielmi98/go-weather-api/internal/config"
+	"github.com/alielmi98/go-weather-api/internal/dto"
 )
 
 type WeatherService interface {
-	GetWeatherByCity(ctx context.Context, city string) (WeatherResponse, error)
+	GetWeatherByCity(ctx context.Context, city dto.CityRequest) (dto.WeatherResponse, error)
 }
 
 type weatherService struct {
 	apiKey string
 	cache  cache.Cache
-}
-
-type WeatherResponse struct {
-	Location    string    `json:"location"`
-	Temperature float64   `json:"temperature"`
-	Conditions  string    `json:"conditions"`
-	Time        time.Time `json:"time"`
 }
 
 func NewWeatherService(cfg *config.Config, cache *cache.Cache) WeatherService {
@@ -34,13 +29,13 @@ func NewWeatherService(cfg *config.Config, cache *cache.Cache) WeatherService {
 	}
 }
 
-func (s *weatherService) GetWeatherByCity(ctx context.Context, city string) (WeatherResponse, error) {
-	cacheKey := fmt.Sprintf("weather:%s", city)
+func (s *weatherService) GetWeatherByCity(ctx context.Context, city dto.CityRequest) (dto.WeatherResponse, error) {
+	cacheKey := fmt.Sprintf("weather:%s", city.City)
 
 	// Check cache
 	cachedWeather, err := s.cache.Get(ctx, cacheKey)
 	if err == nil && cachedWeather != "" {
-		var resp WeatherResponse
+		var resp dto.WeatherResponse
 		err = json.Unmarshal([]byte(cachedWeather), &resp)
 		if err == nil {
 			return resp, nil
@@ -48,23 +43,37 @@ func (s *weatherService) GetWeatherByCity(ctx context.Context, city string) (Wea
 	}
 
 	// Fetch weather from API
-	resp, err := http.Get(fmt.Sprintf("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/%s?unitGroup=metric&key=%s&contentType=json", city, s.apiKey))
+	url := fmt.Sprintf("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/%s?unitGroup=metric&key=%s&contentType=json", city.City, s.apiKey)
+	resp, err := http.Get(url)
 	if err != nil {
-		return WeatherResponse{}, err
+		return dto.WeatherResponse{}, err
 	}
 	defer resp.Body.Close()
 
-	var apiResponse map[string]interface{}
-	err = json.NewDecoder(resp.Body).Decode(&apiResponse)
+	// Read the response body
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return WeatherResponse{}, err
+		return dto.WeatherResponse{}, fmt.Errorf("failed to read response body: %v", err)
+	}
+
+	// Check if the status code is not 200 OK
+	if resp.StatusCode != http.StatusOK {
+		return dto.WeatherResponse{}, fmt.Errorf("external API request failed with status %d and error: %s", resp.StatusCode, string(respBody))
+	}
+
+	var apiResponse map[string]interface{}
+	err = json.Unmarshal(respBody, &apiResponse)
+	if err != nil {
+		return dto.WeatherResponse{}, fmt.Errorf("failed to unmarshal response body: %v", err)
 	}
 
 	// Extract weather data
 	weatherData := apiResponse["days"].([]interface{})[0].(map[string]interface{})
-	weatherResp := WeatherResponse{
-		Location:    city,
+	location := apiResponse["resolvedAddress"].(string)
+	weatherResp := dto.WeatherResponse{
+		Location:    location,
 		Temperature: weatherData["temp"].(float64),
+		Windspeed:   weatherData["windspeed"].(float64),
 		Conditions:  weatherData["conditions"].(string),
 		Time:        time.Now(),
 	}
@@ -73,7 +82,7 @@ func (s *weatherService) GetWeatherByCity(ctx context.Context, city string) (Wea
 	weatherJSON, _ := json.Marshal(weatherResp)
 	err = s.cache.Set(ctx, cacheKey, string(weatherJSON), 12*time.Hour)
 	if err != nil {
-		return WeatherResponse{}, err
+		return dto.WeatherResponse{}, err
 	}
 
 	return weatherResp, nil
