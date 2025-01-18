@@ -9,15 +9,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "email": "your@email.com"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -43,7 +35,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_alielmi98_go-weather-api_internal_services.WeatherResponse"
+                            "$ref": "#/definitions/services.WeatherResponse"
                         }
                     },
                     "400": {
@@ -65,7 +57,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_alielmi98_go-weather-api_internal_services.WeatherResponse": {
+        "services.WeatherResponse": {
             "type": "object",
             "properties": {
                 "conditions": {
@@ -90,7 +82,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
 	BasePath:         "/",
-	Schemes:          []string{},
+	Schemes:          []string{"http"},
 	Title:            "Weather API",
 	Description:      "Weather API for fetching weather information.",
 	InfoInstanceName: "swagger",

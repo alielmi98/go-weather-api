@@ -1,21 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Weather API for fetching weather information.",
-        "title": "Weather API",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "email": "your@email.com"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
-        "version": "1.0"
+        "contact": {}
     },
-    "host": "localhost:8080",
-    "basePath": "/",
     "paths": {
         "/weather/{city}": {
             "get": {
@@ -37,7 +24,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_alielmi98_go-weather-api_internal_services.WeatherResponse"
+                            "$ref": "#/definitions/services.WeatherResponse"
                         }
                     },
                     "400": {
@@ -59,7 +46,7 @@
         }
     },
     "definitions": {
-        "github_com_alielmi98_go-weather-api_internal_services.WeatherResponse": {
+        "services.WeatherResponse": {
             "type": "object",
             "properties": {
                 "conditions": {

@@ -1,6 +1,6 @@
 {
     "ServerPort": ":8080",
     "WeatherAPIKey": "BD9E7QBCGTLENYPBUEUGV6DKA",
-    "RedisAddress": "localhost:6379"
+    "RedisAddress": "redis_container:6379"
   }
   

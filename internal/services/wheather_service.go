@@ -27,10 +27,10 @@ type WeatherResponse struct {
 	Time        time.Time `json:"time"`
 }
 
-func NewWeatherService(cfg *config.Config, cache cache.Cache) WeatherService {
+func NewWeatherService(cfg *config.Config, cache *cache.Cache) WeatherService {
 	return &weatherService{
 		apiKey: cfg.WeatherAPIKey,
-		cache:  cache,
+		cache:  *cache,
 	}
 }
 

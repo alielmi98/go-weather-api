@@ -1,6 +1,5 @@
-basePath: /
 definitions:
-  github_com_alielmi98_go-weather-api_internal_services.WeatherResponse:
+  services.WeatherResponse:
     properties:
       conditions:
         type: string
@@ -11,18 +10,8 @@ definitions:
       time:
         type: string
     type: object
-host: localhost:8080
 info:
-  contact:
-    email: your@email.com
-    name: API Support
-  description: Weather API for fetching weather information.
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
-  title: Weather API
-  version: "1.0"
+  contact: {}
 paths:
   /weather/{city}:
     get:
@@ -39,7 +28,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_alielmi98_go-weather-api_internal_services.WeatherResponse'
+            $ref: '#/definitions/services.WeatherResponse'
         "400":
           description: Bad Request
           schema:
