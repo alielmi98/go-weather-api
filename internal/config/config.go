@@ -13,7 +13,6 @@ type Config struct {
 func LoadConfig() (*Config, error) {
 	viper.SetConfigFile("config.json")
 	viper.AddConfigPath(".")
-	viper.AddConfigPath("./config")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
